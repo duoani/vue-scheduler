@@ -1,0 +1,10 @@
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": ["@vue/babel-plugin-transform-vue-jsx", "@babel/plugin-transform-runtime"],
+  "env": {
+    "development": {
+      "plugins": ["dynamic-import-node"]
+    }
+  },
+  "comments": false
+}
