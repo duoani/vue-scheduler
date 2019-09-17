@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <scheduler
       v-model="selected"
       :multiple="multiple"
@@ -7,25 +7,28 @@
       :disabled="disabled"
       :accuracy="accuracy"
     />
-    <div>
-      <label for="">Accuracy: </label>
-      <input v-model="acc" type="number">
+    <div style="margin: 10px;">
+      <div>
+        <label for="">Accuracy: </label>
+        <input v-model="acc" type="number">
+      </div>
+      <div>
+        <label>Disabled: <input v-model="disabled" type="checkbox"></label>
+      </div>
+      <div>
+        <label>Multiple: <input v-model="multiple" type="checkbox"></label>
+      </div>
+      <div>
+        <label>Footer: <input v-model="footer" type="checkbox"></label>
+      </div>
     </div>
-    <div>
-      <label>Disabled: <input v-model="disabled" type="checkbox"></label>
-    </div>
-    <div>
-      <label>Multiple: <input v-model="multiple" type="checkbox"></label>
-    </div>
-    <div>
-      <label>Footer: <input v-model="footer" type="checkbox"></label>
+    <div style="padding: 10px; background-color: #ececec;">
+      <pre>{{ value }}</pre>
     </div>
   </div>
 </template>
 
 <script>
-// import Preview from '../src/directives/preview'
-
 export default {
   data () {
     return {
@@ -46,6 +49,9 @@ export default {
       set (val) {
         this.accuracy = parseInt(val, 10)
       }
+    },
+    value () {
+      return JSON.stringify(this.selected, '', 2)
     }
   }
 }
