@@ -3,14 +3,14 @@ import { setLocale } from './utils/i18n'
 
 const Plugin = {
   install(Vue, options = {}) {
-    const { locale, encode, decode } = options
+    const { locale, encoder, decoder } = options
     if (typeof locale === 'object') {
       setLocale(locale)
     }
 
     Vue.component('Scheduler', Scheduler)
 
-    Vue.prototype.$SCHEDULER = { encode, decode }
+    Vue.prototype.$SCHEDULER = { encoder, decoder }
   }
 }
 
