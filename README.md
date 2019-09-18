@@ -62,7 +62,7 @@ If `disabled` is `true`, the value can not be change by user interation.
 
 ## Events
 
-- **change**
+- **change**  
 Emit when the value is changed.
   
 
