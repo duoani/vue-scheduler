@@ -142,9 +142,9 @@ export default {
     value: {
       handler (val) {
         if (this.decoder) {
-          val = this.decoder(val)
+          val = this.decoder(val, this.accuracy)
         } else if (this.$SCHEDULER.decoder) {
-          val = this.$SCHEDULER.decoder(val)
+          val = this.$SCHEDULER.decoder(val, this.accuracy)
         }
         this.selected = val
         this.tempSelected = val
@@ -385,9 +385,9 @@ export default {
 
     emitChange (val) {
       if (this.encoder) {
-        val = this.encoder(val)
+        val = this.encoder(val, this.accuracy)
       } else if (this.$SCHEDULER.encoder) {
-        val = this.$SCHEDULER.encoder(val)
+        val = this.$SCHEDULER.encoder(val, this.accuracy)
       }
       this.$emit('input', val)
       this.$emit('change', val)

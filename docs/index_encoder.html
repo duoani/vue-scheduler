@@ -15,7 +15,8 @@
   <div id="app">
     <template>
       <div>
-        <scheduler v-model="selected" :multiple="multiple" :footer="footer" :disabled="disabled" :accuracy="accuracy">
+        <scheduler v-model="selected" :multiple="multiple" :footer="footer" :disabled="disabled" :accuracy="accuracy"
+          :encoder="encoder" :decoder="decoder">
         </scheduler>
         <div style="margin: 10px;">
           <div>
@@ -39,6 +40,60 @@
     </template>
   </div>
   <script>
+    // 将数据库的存储结构转换为组件所要求的结构
+    var parse2CompData = val => {
+      const target = {}
+      for (const k in val) {
+        target[k] = binaryStr2IdxArr(decimal2BinaryStr(val[k]))
+      }
+      return target
+    }
+
+    var parse2SysData = val => {
+      const target = {}
+      let n = 0
+      while (n++ < 7) {
+        target[n] = val[n] ? idxArr2decimal(val[n]) : 0
+      }
+      return target
+    }
+
+    /**
+     * 12582915 => '110000000000000000000011'
+     * @param {Number} n
+     * @return {String} (length: 24)
+     */
+    function decimal2BinaryStr(n) {
+      return n.toString(2).padStart(24, '0') // 须左侧补零
+    }
+
+    /**
+     * '110000000000000000000011' => [0, 1, 22, 23]
+     * @param {String} binaryStr (length: 24)
+     * @return {Array}
+     */
+    function binaryStr2IdxArr(binaryStr) {
+      return binaryStr.split('').reverse().map((el, idx) => el === '1' && idx).filter(el => el !== false)
+    }
+
+    /**
+     * [0, 1, 22, 23] => '110000000000000000000011'
+     * @param {Array} idxArr
+     * @return {String} (length: 24)
+     */
+    function idxArr2BinaryStr(idxArr) {
+      return Array(24).fill().map((el, idx) => +idxArr.includes(idx)).reverse().join('')
+    }
+
+    /**
+     * [0, 1, 22, 23] => 12582915
+     * @param {Array} idxArr
+     * @return {Number}
+     */
+    function idxArr2decimal(idxArr) {
+      return parseInt(idxArr2BinaryStr(idxArr), 2)
+    }
+
     var Main = {
       data() {
         return {
@@ -48,7 +103,9 @@
           multiple: false,
           selected: {
             1: [1]
-          }
+          },
+          decoder: parse2CompData,
+          encoder: parse2SysData
         }
       },
       computed: {

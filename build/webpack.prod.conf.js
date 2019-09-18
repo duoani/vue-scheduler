@@ -1,6 +1,6 @@
-const TerserPlugin = require('terser-webpack-plugin');
-const merge = require('webpack-merge');
-const baseWebpackConfig = require('./webpack.base.conf');
+const TerserPlugin = require('terser-webpack-plugin')
+const merge = require('webpack-merge')
+const baseWebpackConfig = require('./webpack.base.conf')
 
 module.exports = merge(baseWebpackConfig, {
   entry: './src/index.js',
@@ -8,7 +8,7 @@ module.exports = merge(baseWebpackConfig, {
     filename: 'vue-scheduler.js',
     library: 'VueScheduler',
     libraryTarget: 'umd',
-    globalObject: 'typeof self !== \'undefined\' ? self : this',
+    globalObject: 'typeof self !== \'undefined\' ? self : this'
   },
   externals: {
     vue: {
@@ -19,15 +19,16 @@ module.exports = merge(baseWebpackConfig, {
     }
   },
   optimization: {
-    minimizer: [
-      new TerserPlugin({
-        sourceMap: true,
-        terserOptions: {
-          compress: {
-            drop_console: true,
-          },
-        },
-      }),
-    ],
+    minimize: false
+    // minimizer: [
+    //   new TerserPlugin({
+    //     sourceMap: false,
+    //     terserOptions: {
+    //       compress: {
+    //         drop_console: true
+    //       }
+    //     }
+    //   })
+    // ]
   }
-});
+})

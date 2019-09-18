@@ -34,7 +34,12 @@ module.exports = {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
         enforce: 'pre',
-        include: [path.resolve(__dirname, '../src'), path.resolve(__dirname, '../test')],
+        include: [
+          path.resolve(__dirname, '../src'),
+          path.resolve(__dirname, '../test'),
+          path.resolve(__dirname, '../docs'),
+          path.resolve(__dirname, '../dev')
+        ],
         options: {
           formatter: require('eslint-friendly-formatter'),
           emitWarning: false
