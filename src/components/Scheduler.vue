@@ -63,7 +63,6 @@
           }"
           @mousedown="handleMouseDown(day, hourIndex - 1)"
           @mousemove="handleMouseMove(day, hourIndex - 1)"
-          @mouseup="handleMouseUp(day, hourIndex - 1)"
         />
       </tr>
     </tbody>
@@ -218,6 +217,17 @@ export default {
       this.endCoord = this.startCoord.slice(0)
       this.selectMode = this.getCellSelectMode(this.startCoord)
       this.updateRange(this.startCoord, this.endCoord, this.selectMode)
+      // FIXED: 当 mouseup 发生在 td 以外的地方时，会导致选择导演，以所 mouseup 必须
+      // 监听于 document 之上
+      const upFn = (e) => {
+        document.removeEventListener('mouseup', upFn)
+        if (!this.moving) {
+          return false
+        }
+        this.end()
+      }
+
+      document.addEventListener('mouseup', upFn)
     },
     handleMouseMove (row, col) {
       if (!this.moving) {
@@ -231,17 +241,6 @@ export default {
       }
       this.endCoord = [row, col]
       this.updateRange(this.startCoord, this.endCoord, this.selectMode)
-    },
-    handleMouseUp (row, col) {
-      if (!this.moving) {
-        return false
-      }
-      // 起始点都在同一个位置
-      if (this.startCoord[0] === this.endCoord[0] &&
-        this.startCoord[1] === this.endCoord[1]) {
-        this.updateRange(this.startCoord, this.endCoord, this.selectMode)
-      }
-      this.end()
     },
     /**
    * 根据选择模式合并合个集合
