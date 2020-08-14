@@ -2,6 +2,7 @@
   <div>
     <scheduler
       v-model="selected"
+      :locale="locale"
       :multiple="multiple"
       :footer="footer"
       :disabled="disabled"
@@ -78,6 +79,15 @@ export default {
       encoder: serialize,
       selected: {
         1: [1, 2, 3, 4]
+      },
+      locale: {
+        AM: '上午1',
+        PM: '下午1',
+        TIME_TITLE: '时间1',
+        WEEK_TITLE: '星期1',
+        WEEK_DAYS: ['星期一1', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+        DRAG_TIP: '可拖动鼠标选择时间段1',
+        RESET: '清空选择1'
       }
     }
   },

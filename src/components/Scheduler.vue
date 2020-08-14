@@ -90,7 +90,7 @@ export default {
   name: 'Scheduler',
 
   props: {
-    value: [Object, Number, String],
+    value: {},
     /**
      * 将用户自定义的值解码为 VueScheduler 的标准值。
      * @param {Object} selected 已选值
@@ -113,6 +113,7 @@ export default {
       type: Boolean,
       default: true
     },
+    locale: Object,
     multiple: Boolean,
     disabled: Boolean
   },
@@ -153,7 +154,15 @@ export default {
   },
 
   methods: {
-    i18n,
+    i18n (key) {
+      if (this.locale) {
+        const value = this.locale[key]
+        if (value !== void 0) {
+          return value
+        }
+      }
+      return i18n(key)
+    },
     isCellSelected (day, hourIndex) {
       const { tempSelected = {}} = this
       const selectedHours = tempSelected[day]
