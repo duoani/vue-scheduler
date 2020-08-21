@@ -6,6 +6,6 @@ export function setLocale (locale) {
   _locale = locale
 }
 
-export default function i18n (key) {
-  return _locale[key] || key
+export default function i18n (key, defaults) {
+  return _locale[key] || (defaults !== void 0 ? defaults : key)
 }

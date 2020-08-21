@@ -38,7 +38,7 @@
           :colspan="accuracy"
           @click="handleClickHour(n-1)"
         >
-          {{ n - 1 }}
+          {{ i18n('HOURS', '')[n - 1] || (n - 1) }}
         </td>
       </tr>
     </thead>
@@ -141,27 +141,33 @@ export default {
   watch: {
     value: {
       handler (val) {
-        if (this.decoder) {
-          val = this.decoder(val, this.accuracy)
-        } else if (this.$SCHEDULER.decoder) {
-          val = this.$SCHEDULER.decoder(val, this.accuracy)
-        }
-        this.selected = val
-        this.tempSelected = val
+        this.decodeVal(val, this.accuracy)
       },
       immediate: true
     }
+    // accuracy (val) {
+    //   this.decodeVal(this.value, val)
+    // }
   },
 
   methods: {
-    i18n (key) {
+    decodeVal (val, accuracy) {
+      if (this.decoder) {
+        val = this.decoder(val, accuracy)
+      } else if (this.$SCHEDULER.decoder) {
+        val = this.$SCHEDULER.decoder(val, accuracy)
+      }
+      this.selected = val
+      this.tempSelected = val
+    },
+    i18n (key, defaults) {
       if (this.locale) {
         const value = this.locale[key]
         if (value !== void 0) {
           return value
         }
       }
-      return i18n(key)
+      return i18n(key, defaults)
     },
     isCellSelected (day, hourIndex) {
       const { tempSelected = {}} = this

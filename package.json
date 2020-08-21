@@ -1,6 +1,6 @@
 {
   "name": "@duoa/vue-scheduler",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A Vue.js component for time selection within one week",
   "author": "Duoani <duoani@126.com>",
   "keywords": ["vue", "scheduler", "ad schedule", "schedule"],
