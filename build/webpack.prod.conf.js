@@ -19,16 +19,16 @@ module.exports = merge(baseWebpackConfig, {
     }
   },
   optimization: {
-    minimize: false
-    // minimizer: [
-    //   new TerserPlugin({
-    //     sourceMap: false,
-    //     terserOptions: {
-    //       compress: {
-    //         drop_console: true
-    //       }
-    //     }
-    //   })
-    // ]
+    // minimize: false
+    minimizer: [
+      new TerserPlugin({
+        sourceMap: false,
+        terserOptions: {
+          compress: {
+            drop_console: true
+          }
+        }
+      })
+    ]
   }
 })

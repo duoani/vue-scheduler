@@ -82,7 +82,7 @@ Like the html `<select>`, `multiple` indicates whether user can select multiple 
 If `disabled` is `true`, the value can not be change by user interation.
 
 - **locale** {Object}  
-If `locale` is given, use is locale instead of the global one.
+If `locale` is given, use this locale instead of the global one.
 
 ## Events
 
