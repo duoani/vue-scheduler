@@ -154,7 +154,7 @@ export default {
     decodeVal (val, accuracy) {
       if (this.decoder) {
         val = this.decoder(val, accuracy)
-      } else if (this.$SCHEDULER.decoder) {
+      } else if (this.$SCHEDULER && this.$SCHEDULER.decoder) {
         val = this.$SCHEDULER.decoder(val, accuracy)
       }
       this.selected = val
@@ -400,7 +400,7 @@ export default {
     emitChange (val) {
       if (this.encoder) {
         val = this.encoder(val, this.accuracy)
-      } else if (this.$SCHEDULER.encoder) {
+      } else if (this.$SCHEDULER && this.$SCHEDULER.encoder) {
         val = this.$SCHEDULER.encoder(val, this.accuracy)
       }
       this.$emit('input', val)

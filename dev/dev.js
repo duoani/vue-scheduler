@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Dev from './Dev.vue'
-import VueSchedule from '../src/index'
+// import VueSchedule from '../src/index'
 
-Vue.use(VueSchedule)
+// Vue.use(VueSchedule)
 
 Vue.config.productionTip = false
 

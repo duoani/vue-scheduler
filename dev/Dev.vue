@@ -7,8 +7,6 @@
       :footer="footer"
       :disabled="disabled"
       :accuracy="accuracy"
-      :encoder="encoder"
-      :decoder="decoder"
     />
     <div style="margin: 10px;">
       <div>
@@ -32,6 +30,8 @@
 </template>
 
 <script>
+import VueSchedule from '../src/index'
+
 var serialize = function (data, accuracy) {
   accuracy = accuracy > 0 ? accuracy : 1
   var chunkSize = 24 * accuracy
@@ -69,6 +69,9 @@ var parse = function (strSequence, accuracy) {
 }
 
 export default {
+  components: {
+    'scheduler': VueSchedule
+  },
   data () {
     return {
       disabled: false,
