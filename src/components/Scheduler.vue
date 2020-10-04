@@ -15,24 +15,10 @@
             {{ i18n('WEEK_TITLE') }}
           </div>
         </th>
-        <th
-          class="scheduler-half-toggle"
-          :colspan="halfDaySpan"
-          @click="handleClickAM()"
-        >
-          {{ i18n('AM') }}
-        </th>
-        <th
-          class="scheduler-half-toggle"
-          :colspan="halfDaySpan"
-          @click="handleClickPM()"
-        >
-          {{ i18n('PM') }}
-        </th>
       </tr>
       <tr>
         <td
-          v-for="n in 24"
+          v-for="n in i18n('HOURS', []).length"
           :key="n"
           class="scheduler-hour"
           :colspan="accuracy"
@@ -44,7 +30,7 @@
     </thead>
     <tbody>
       <tr
-        v-for="day in 7"
+        v-for="day in i18n('WEEK_DAYS').length"
         :key="day"
       >
         <td
@@ -134,7 +120,8 @@ export default {
       return this.accuracy * 12
     },
     cellColAmout () {
-      return this.accuracy * 24
+      // should access i18n here
+      return this.accuracy * 12
     }
   },
 
