@@ -1,4 +1,4 @@
-# Breaking changes in v1.x.x
+# Breaking changes in v2.0.0
 
 ## value
 Now, for sunday, value is `0`.
