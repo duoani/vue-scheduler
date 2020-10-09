@@ -7,6 +7,7 @@
       :footer="footer"
       :disabled="disabled"
       :accuracy="accuracy"
+      :hour-range="[8, 16]"
     />
     <div style="margin: 10px;">
       <div>
@@ -32,41 +33,41 @@
 <script>
 import VueSchedule from '../src/index'
 
-var serialize = function (data, accuracy) {
-  accuracy = accuracy > 0 ? accuracy : 1
-  var chunkSize = 24 * accuracy
-  var res = []
-  var i = 0
-  for (i = 0; i < chunkSize * 7; i++) {
-    res[i] = 0
-  }
-  for (i = 0; i < 7; i++) {
-    var row = data[i + 1]
-    if (!row) {
-      continue
-    }
-    for (var j = 0, rowLen = row.length; j < rowLen; j++) {
-      res[i * chunkSize + row[j]] = 1
-    }
-  }
-  return res.join('')
-}
-var parse = function (strSequence, accuracy) {
-  accuracy = accuracy > 0 ? accuracy : 1
-  var chunkSize = 24 * accuracy
-  var res = {}
-  for (var i = 0, row = 1, len = strSequence.length; i < len; i++) {
-    var col = i % chunkSize
-    if (strSequence[i] === '1') {
-      !res[row] && (res[row] = [])
-      res[row].push(col)
-    }
-    if ((i + 1) % chunkSize === 0) {
-      row++
-    }
-  }
-  return res
-}
+// var serialize = function (data, accuracy) {
+//   accuracy = accuracy > 0 ? accuracy : 1
+//   var chunkSize = 24 * accuracy
+//   var res = []
+//   var i = 0
+//   for (i = 0; i < chunkSize * 7; i++) {
+//     res[i] = 0
+//   }
+//   for (i = 0; i < 7; i++) {
+//     var row = data[i + 1]
+//     if (!row) {
+//       continue
+//     }
+//     for (var j = 0, rowLen = row.length; j < rowLen; j++) {
+//       res[i * chunkSize + row[j]] = 1
+//     }
+//   }
+//   return res.join('')
+// }
+// var parse = function (strSequence, accuracy) {
+//   accuracy = accuracy > 0 ? accuracy : 1
+//   var chunkSize = 24 * accuracy
+//   var res = {}
+//   for (var i = 0, row = 1, len = strSequence.length; i < len; i++) {
+//     var col = i % chunkSize
+//     if (strSequence[i] === '1') {
+//       !res[row] && (res[row] = [])
+//       res[row].push(col)
+//     }
+//     if ((i + 1) % chunkSize === 0) {
+//       row++
+//     }
+//   }
+//   return res
+// }
 
 export default {
   components: {
@@ -78,8 +79,8 @@ export default {
       footer: true,
       accuracy: 1,
       multiple: false,
-      decoder: parse,
-      encoder: serialize,
+      // decoder: parse,
+      // encoder: serialize,
       selected: {
         1: [1, 2, 3, 4]
       },

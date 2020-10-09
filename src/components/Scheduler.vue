@@ -7,7 +7,10 @@
   >
     <thead>
       <tr>
-        <th rowspan="2" class="slash">
+        <th
+          :rowspan="2"
+          class="slash"
+        >
           <div class="scheduler-time-title">
             {{ i18n('TIME_TITLE') }}
           </div>
@@ -15,30 +18,38 @@
             {{ i18n('WEEK_TITLE') }}
           </div>
         </th>
+        <template v-if="isFullHours">
+          <th
+            class="scheduler-half-toggle"
+            :colspan="halfDaySpan"
+            @click="handleClickAM()"
+          >
+            {{ i18n('AM') }}
+          </th>
+          <th
+            class="scheduler-half-toggle"
+            :colspan="halfDaySpan"
+            @click="handleClickPM()"
+          >
+            {{ i18n('PM') }}
+          </th>
+        </template>
         <th
+          v-else
           class="scheduler-half-toggle"
-          :colspan="halfDaySpan"
-          @click="handleClickAM()"
-        >
-          {{ i18n('AM') }}
-        </th>
-        <th
-          class="scheduler-half-toggle"
-          :colspan="halfDaySpan"
-          @click="handleClickPM()"
-        >
-          {{ i18n('PM') }}
-        </th>
+          :colspan="cellColAmout"
+          @click="handleClickWeek()"
+        ></th>
       </tr>
       <tr>
         <td
-          v-for="n in 24"
-          :key="n"
+          v-for="(hour, index) in hourSerial"
+          :key="index"
           class="scheduler-hour"
           :colspan="accuracy"
-          @click="handleClickHour(n-1)"
+          @click="handleClickHour(index)"
         >
-          {{ i18n('HOURS', '')[n - 1] || (n - 1) }}
+          {{ i18n('HOURS', '')[hour] || (hour) }}
         </td>
       </tr>
     </thead>
@@ -63,12 +74,14 @@
           }"
           @mousedown="handleMouseDown(day, hourIndex - 1)"
           @mousemove="handleMouseMove(day, hourIndex - 1)"
+          @touchstart="handleMouseDown(day, hourIndex - 1)"
+          @touchmove="handleMouseMove(day, hourIndex - 1)"
         />
       </tr>
     </tbody>
     <tfoot v-if="footer">
       <tr>
-        <td :colspan="accuracy * 24 + 1">
+        <td :colspan="cellColAmout + 1">
           <span class="scheduler-tips">{{ i18n('DRAG_TIP') }}</span>
           <a
             class="scheduler-reset"
@@ -103,6 +116,13 @@ export default {
      * @param {Number} accuracy 精度
      */
     encoder: Function,
+    hourRange: {
+      type: Array,
+      default: () => [0, 23],
+      validator (val) {
+        return true
+      }
+    },
     // how many cells of an hour
     accuracy: {
       type: Number,
@@ -130,11 +150,24 @@ export default {
   },
 
   computed: {
+    hourSerial () {
+      const serial = []
+      for (let i = this.hourRange[0]; i <= this.hourRange[1]; i++) {
+        serial.push(i)
+      }
+      return serial
+    },
+    hours () {
+      return this.hourSerial.length
+    },
+    isFullHours () {
+      return this.hours === 24
+    },
     halfDaySpan () {
       return this.accuracy * 12
     },
     cellColAmout () {
-      return this.accuracy * 24
+      return this.accuracy * this.hours
     }
   },
 
@@ -201,6 +234,15 @@ export default {
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
+    handleClickWeek () {
+      if (this.disabled) {
+        return
+      }
+      const startCoord = [1, 0] // [row, col] row start form 1
+      const endCoord = [7, this.hours * this.accuracy - 1]
+      const selectMode = this.getRangeSelectMode(startCoord, endCoord)
+      this.updateToggle(startCoord, endCoord, selectMode)
+    },
     /**
      * toggle hour
      * @param {Number} hour 0 - 23
@@ -219,7 +261,7 @@ export default {
     handleClickDay (day) {
       if (this.disabled) { return }
       const startCoord = [day, 0] // [row, col] row start form 1
-      const endCoord = [day, 24 * this.accuracy - 1]
+      const endCoord = [day, this.hours * this.accuracy - 1]
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
@@ -256,42 +298,6 @@ export default {
       }
       this.endCoord = [row, col]
       this.updateRange(this.startCoord, this.endCoord, this.selectMode)
-    },
-    /**
-   * 根据选择模式合并合个集合
-   * @param {Object} origin 上一次选中的数据
-   * @param {Object} current 当前选中的数据
-   * @param {Number} selectMode 选择模式 {0: none, 1: 选择（合并）模式, 2: 排除模式（从选区中减去）}
-   */
-    merge (origin, current, selectMode) {
-      var res = {}
-      // 替换模式下，弃用之前的选区，直接使用当前选区
-      let i
-      if (selectMode === SelectMode.REPLACE) {
-        for (i = 1; i <= 7; i++) {
-          if (current[i] && current[i].length) {
-            res[i] = current[i].slice(0)
-          }
-        }
-        return res
-      }
-      for (i = 1; i <= 7; i++) {
-        if (!current[i]) {
-          if (origin[i] && origin[i].length) {
-            res[i] = origin[i].slice(0)
-          }
-          continue
-        }
-        if (origin[i] && origin[i].length) {
-          var m = selectMode === SelectMode.JOIN
-            ? mergeArray(origin[i], current[i])
-            : rejectArray(origin[i], current[i])
-          m.length && (res[i] = m)
-        } else if (selectMode === SelectMode.JOIN) {
-          res[i] = current[i].slice(0)
-        }
-      }
-      return res
     },
     /**
      * 根据当前选中的范围内时间格式的空闲情况，决定是全选还是全不选
@@ -379,6 +385,43 @@ export default {
     updateRange (startCoord, endCoord, selectMode) {
       var currentSelectRange = makeMatrix(startCoord, endCoord)
       this.tempSelected = this.merge(this.selected, currentSelectRange, selectMode)
+    },
+
+    /**
+     * 根据选择模式合并合个集合
+     * @param {Object} origin 上一次选中的数据
+     * @param {Object} current 当前选中的数据
+     * @param {Number} selectMode 选择模式 {0: none, 1: 选择（合并）模式, 2: 排除模式（从选区中减去）}
+     */
+    merge (origin, current, selectMode) {
+      var res = {}
+      // 替换模式下，弃用之前的选区，直接使用当前选区
+      let i
+      if (selectMode === SelectMode.REPLACE) {
+        for (i = 1; i <= 7; i++) {
+          if (current[i] && current[i].length) {
+            res[i] = current[i].slice(0)
+          }
+        }
+        return res
+      }
+      for (i = 1; i <= 7; i++) {
+        if (!current[i]) {
+          if (origin[i] && origin[i].length) {
+            res[i] = origin[i].slice(0)
+          }
+          continue
+        }
+        if (origin[i] && origin[i].length) {
+          var m = selectMode === SelectMode.JOIN
+            ? mergeArray(origin[i], current[i])
+            : rejectArray(origin[i], current[i])
+          m.length && (res[i] = m)
+        } else if (selectMode === SelectMode.JOIN) {
+          res[i] = current[i].slice(0)
+        }
+      }
+      return res
     },
 
     // 并更新选中数据
