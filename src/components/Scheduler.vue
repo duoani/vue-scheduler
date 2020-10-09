@@ -277,10 +277,10 @@ export default {
       if (this.disabled) {
         return
       }
-      const fromIndex = hour * this.accuracy
-      const toIndex = fromIndex + this.accuracy - 1
-      const startCoord = [this.ignoreWeekend ? 1 : 0, fromIndex] // [row, col] row start form 1
-      const endCoord = [this.ignoreWeekend ? 5 : 6, toIndex]
+      const fromColIndex = hour * this.accuracy
+      const toColIndex = fromColIndex + this.accuracy - 1
+      const startCoord = [this.ignoreWeekend ? 1 : 0, fromColIndex] // [row, col] row start form 1
+      const endCoord = [this.ignoreWeekend ? 5 : 6, toColIndex]
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
@@ -357,18 +357,17 @@ export default {
       // TODO 未过滤 disabled 的格子
       var used = 0
       for (var i = 0; i < rows; i++) {
-        var day = startRow + i
+        var day = (this.startOfWeek + startRow + i) % 7
         var data = this.selected[day]
         if (!data) {
           continue
         }
-        for (var j = 0; j < data.length; j++) {
-          if (data[j] >= startCol && data[j] <= endCol) {
+        for (var j = startCol; j <= endCol; j++) {
+          if (data.indexOf(j) >= 0) {
             used++
           }
         }
       }
-
       return total === used ? SelectMode.MINUS : SelectMode.JOIN
     },
 
