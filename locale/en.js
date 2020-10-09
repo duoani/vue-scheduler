@@ -3,7 +3,7 @@ export default {
   PM: 'PM',
   TIME_TITLE: 'TIME',
   WEEK_TITLE: 'DAY',
-  WEEK_DAYS: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
+  WEEK_DAYS: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   DRAG_TIP: 'Drag to select hours',
   RESET: 'Reset Selected'
 }

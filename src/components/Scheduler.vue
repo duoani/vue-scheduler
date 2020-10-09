@@ -43,11 +43,11 @@
       </tr>
       <tr>
         <td
-          v-for="(hour, index) in hourSerial"
-          :key="index"
+          v-for="(hour, hourIndex) in hourSerial"
+          :key="hourIndex"
           class="scheduler-hour"
           :colspan="accuracy"
-          @click="handleClickHour(index)"
+          @click="handleClickHour(hourIndex)"
         >
           {{ i18n('HOURS', '')[hour] || (hour) }}
         </td>
@@ -55,14 +55,14 @@
     </thead>
     <tbody>
       <tr
-        v-for="day in 7"
+        v-for="(day, dayIndex) in daySerial"
         :key="day"
       >
         <td
           class="scheduler-day-toggle"
-          @click="handleClickDay(day)"
+          @click="handleClickDay(dayIndex)"
         >
-          {{ i18n('WEEK_DAYS')[day - 1] }}
+          {{ i18n('WEEK_DAYS')[day] }}
         </td>
 
         <td
@@ -72,10 +72,10 @@
           :class="{
             'scheduler-active': isCellSelected(day, hourIndex - 1)
           }"
-          @mousedown="handleMouseDown(day, hourIndex - 1)"
-          @mousemove="handleMouseMove(day, hourIndex - 1)"
-          @touchstart="handleMouseDown(day, hourIndex - 1)"
-          @touchmove="handleMouseMove(day, hourIndex - 1)"
+          @mousedown="handleMouseDown(dayIndex, hourIndex - 1)"
+          @mousemove="handleMouseMove(dayIndex, hourIndex - 1)"
+          @touchstart="handleMouseDown(dayIndex, hourIndex - 1)"
+          @touchmove="handleMouseMove(dayIndex, hourIndex - 1)"
         />
       </tr>
     </tbody>
@@ -96,7 +96,7 @@
 <script>
 import SelectMode from '@/constants/SelectMode'
 import i18n from '@/utils/i18n'
-import { makeMatrix, mergeArray, rejectArray, sortCoord } from '@/utils/helper'
+import { makeMatrix, makeDaySerial, mergeArray, rejectArray, sortCoord } from '@/utils/helper'
 
 export default {
 
@@ -120,9 +120,23 @@ export default {
       type: Array,
       default: () => [0, 23],
       validator (val) {
+        const [start, end] = val
+        if (start < 0 || end > 23 || start > end) {
+          throw new Error('Invalid prop: custom validator check failed for prop "hourRange". It must be a number array with 2 items. such as [0, 23].')
+        }
         return true
       }
     },
+    // the first day of a week
+    startOfWeek: {
+      type: Number,
+      default: 1,
+      validator (val) {
+        return val >= 0 && val <= 6
+      }
+    },
+    // whether Sat & Sun is invisible
+    ignoreWeekend: Boolean,
     // how many cells of an hour
     accuracy: {
       type: Number,
@@ -150,11 +164,23 @@ export default {
   },
 
   computed: {
+    startOfWeekFixed () {
+      if (this.ignoreWeekend) {
+        if (this.startOfWeek === 0 || this.startOfWeek === 6) {
+          return 1
+        }
+      }
+      return this.startOfWeek
+    },
     hourSerial () {
       const serial = []
       for (let i = this.hourRange[0]; i <= this.hourRange[1]; i++) {
         serial.push(i)
       }
+      return serial
+    },
+    daySerial () {
+      const serial = makeDaySerial(this.startOfWeekFixed, this.ignoreWeekend ? 5 : 7, this.ignoreWeekend)
       return serial
     },
     hours () {
@@ -229,8 +255,8 @@ export default {
     toggleHalfDay (index) {
       const fromIndex = (index - 1) * 12 * this.accuracy
       const toIndex = fromIndex + 12 * this.accuracy - 1
-      const startCoord = [1, fromIndex] // [row, col] row start form 1
-      const endCoord = [7, toIndex]
+      const startCoord = [this.ignoreWeekend ? 1 : 0, fromIndex] // [row, col] row start form 1
+      const endCoord = [this.ignoreWeekend ? 5 : 6, toIndex]
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
@@ -238,8 +264,8 @@ export default {
       if (this.disabled) {
         return
       }
-      const startCoord = [1, 0] // [row, col] row start form 1
-      const endCoord = [7, this.hours * this.accuracy - 1]
+      const startCoord = [this.ignoreWeekend ? 1 : 0, 0] // [row, col] row start form 1
+      const endCoord = [this.ignoreWeekend ? 5 : 6, this.hours * this.accuracy - 1]
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
@@ -253,15 +279,15 @@ export default {
       }
       const fromIndex = hour * this.accuracy
       const toIndex = fromIndex + this.accuracy - 1
-      const startCoord = [1, fromIndex] // [row, col] row start form 1
-      const endCoord = [7, toIndex]
+      const startCoord = [this.ignoreWeekend ? 1 : 0, fromIndex] // [row, col] row start form 1
+      const endCoord = [this.ignoreWeekend ? 5 : 6, toIndex]
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
-    handleClickDay (day) {
+    handleClickDay (dayIndex) {
       if (this.disabled) { return }
-      const startCoord = [day, 0] // [row, col] row start form 1
-      const endCoord = [day, this.hours * this.accuracy - 1]
+      const startCoord = [dayIndex, 0] // [row, col] row start form 1
+      const endCoord = [dayIndex, this.hours * this.accuracy - 1]
       const selectMode = this.getRangeSelectMode(startCoord, endCoord)
       this.updateToggle(startCoord, endCoord, selectMode)
     },
@@ -383,7 +409,7 @@ export default {
    * @param {SelectMode} selectMode 选择模式
    */
     updateRange (startCoord, endCoord, selectMode) {
-      var currentSelectRange = makeMatrix(startCoord, endCoord)
+      var currentSelectRange = makeMatrix(startCoord, endCoord, this.startOfWeekFixed, this.ignoreWeekend)
       this.tempSelected = this.merge(this.selected, currentSelectRange, selectMode)
     },
 
@@ -398,14 +424,14 @@ export default {
       // 替换模式下，弃用之前的选区，直接使用当前选区
       let i
       if (selectMode === SelectMode.REPLACE) {
-        for (i = 1; i <= 7; i++) {
+        for (i = 0; i < 7; i++) {
           if (current[i] && current[i].length) {
             res[i] = current[i].slice(0)
           }
         }
         return res
       }
-      for (i = 1; i <= 7; i++) {
+      for (i = 0; i < 7; i++) {
         if (!current[i]) {
           if (origin[i] && origin[i].length) {
             res[i] = origin[i].slice(0)

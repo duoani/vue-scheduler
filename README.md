@@ -2,6 +2,9 @@
 
 A Vue.js component for time selection within one week
 
+## Breaking Changes
+There are <a href="./BREAKING_CHANGE_2.0.0.md" target="_blank">some breaking changes</a> that you need to be aware of to migrate your application to 2.0.0.
+
 ## Take a glance
 
 <a href="https://duoani.github.io/vue-scheduler/index.html" target="_blank">Online Demo</a>
@@ -84,6 +87,18 @@ If `disabled` is `true`, the value can not be change by user interation.
 - **locale** {Object}  
 If `locale` is given, use this locale instead of the global one.
 
+- **hourRange** {Array} *since v2.0.0*  
+Specify a schedulable time range of a day. If you don't want to have 24 hour schedules, you can pass a number array with 2 number to this prop. For example, you just want a day from 8:00 to 22:00 to be schedulable, you can pass `[8, 22]` to it.  
+The default value is `[0, 23]`.
+
+- **startOfWeek** {Number} *since v2.0.0*  
+The first day of a week. `0` is Sunday, `1` is Monday, ...   
+The default value is `1`.
+
+- **ignoreWeekend** {Boolean} *since v2.0.0*
+Whether Sat & Sun is invisible.
+The default value is `false`.
+
 ## Events
 
 - **change**  
@@ -99,7 +114,7 @@ const locale = {
   PM: 'PM',
   TIME_TITLE: 'TIME',
   WEEK_TITLE: 'DAY',
-  WEEK_DAYS: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
+  WEEK_DAYS: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
   HOURS: [
     '00:00', '01:00', '02:00', '03:00', '04:00', '05:00',
     '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',

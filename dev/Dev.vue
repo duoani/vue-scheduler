@@ -7,12 +7,18 @@
       :footer="footer"
       :disabled="disabled"
       :accuracy="accuracy"
-      :hour-range="[8, 16]"
+      :hour-range="[0, 23]"
+      :start-of-week="startOfWeek"
+      :ignore-weekend="ignoreWeekend"
     />
     <div style="margin: 10px;">
       <div>
         <label for="">Accuracy: </label>
         <input v-model="acc" type="number">
+      </div>
+      <div>
+        <label for="">Start of week: </label>
+        <input v-model="sow" :min="0" :max="6" type="number">
       </div>
       <div>
         <label>Disabled: <input v-model="disabled" type="checkbox"></label>
@@ -22,6 +28,9 @@
       </div>
       <div>
         <label>Footer: <input v-model="footer" type="checkbox"></label>
+      </div>
+      <div>
+        <label>IgnoreWeekend: <input v-model="ignoreWeekend" type="checkbox"></label>
       </div>
     </div>
     <div style="padding: 10px; background-color: #ececec;">
@@ -78,6 +87,8 @@ export default {
       disabled: false,
       footer: true,
       accuracy: 1,
+      ignoreWeekend: false,
+      startOfWeek: 1,
       multiple: false,
       // decoder: parse,
       // encoder: serialize,
@@ -89,7 +100,7 @@ export default {
         PM: '下午',
         TIME_TITLE: '时间',
         WEEK_TITLE: '星期',
-        WEEK_DAYS: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+        WEEK_DAYS: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
         HOURS: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
           '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'],
         DRAG_TIP: '可拖动鼠标选择时间段',
@@ -104,6 +115,14 @@ export default {
       },
       set (val) {
         this.accuracy = parseInt(val, 10)
+      }
+    },
+    sow: {
+      get () {
+        return this.startOfWeek
+      },
+      set (val) {
+        this.startOfWeek = parseInt(val, 10)
       }
     },
     value () {

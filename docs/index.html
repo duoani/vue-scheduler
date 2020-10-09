@@ -7,20 +7,33 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>vue-img-preview</title>
   <script src="https://unpkg.com/vue/dist/vue.js"></script>
-  <script src="https://unpkg.com/@duoa/vue-scheduler@1.0.2/dist/vue-scheduler.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/@duoa/vue-scheduler@1.0.2/dist/vue-scheduler.css">
+  <script src="https://unpkg.com/@duoa/vue-scheduler@2.0.0/dist/vue-scheduler.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/@duoa/vue-scheduler@2.0.0/dist/vue-scheduler.css">
 </head>
 
 <body>
   <div id="app">
     <template>
       <div>
-        <scheduler v-model="selected" :multiple="multiple" :footer="footer" :disabled="disabled" :accuracy="accuracy">
+        <scheduler
+          v-model="selected"
+          :multiple="multiple"
+          :footer="footer"
+          :disabled="disabled"
+          :accuracy="accuracy"
+          :hour-range="[0, 23]"
+          :start-of-week="startOfWeek"
+          :ignore-weekend="ignoreWeekend"
+        >
         </scheduler>
         <div style="margin: 10px;">
           <div>
             <label for="">Accuracy: </label>
             <input v-model="acc" type="number">
+          </div>
+          <div>
+            <label for="">Start of week: </label>
+            <input v-model="sow" :min="0" :max="6" type="number">
           </div>
           <div>
             <label>Disabled: <input v-model="disabled" type="checkbox"></label>
@@ -29,7 +42,10 @@
             <label>Multiple: <input v-model="multiple" type="checkbox"></label>
           </div>
           <div>
-            <label>Footer: <input v-model="footer" type="checkbox"></label>
+            <label>IgnoreWeekend: <input v-model="ignoreWeekend" type="checkbox"></label>
+          </div>
+          <div>
+            <label>IgnoreWeekend: <input v-model="ignoreWeekend" type="checkbox"></label>
           </div>
         </div>
         <div style="padding: 10px; background-color: #ececec;">
@@ -45,6 +61,8 @@
           disabled: false,
           footer: true,
           accuracy: 1,
+          ignoreWeekend: false,
+          startOfWeek: 1,
           multiple: false,
           selected: {
             1: [1]
@@ -58,6 +76,14 @@
           },
           set(val) {
             this.accuracy = parseInt(val, 10)
+          }
+        },
+        sow: {
+          get () {
+            return this.startOfWeek
+          },
+          set (val) {
+            this.startOfWeek = parseInt(val, 10)
           }
         },
         displayVal() {

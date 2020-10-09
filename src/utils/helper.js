@@ -12,20 +12,37 @@ export function makeRange (from, to) {
     from = from - to
   }
 
-  var res = []
-  for (var i = from; i <= to; i++) {
+  const res = []
+  for (let i = from; i <= to; i++) {
     res.push(i)
   }
   return res
 }
 
-export function makeMatrix (startCoord, endCoord) {
-  var matrix = {}
-  var colArr = makeRange(startCoord[1], endCoord[1])
-  var fromRow = startCoord[0] < endCoord[0] ? startCoord[0] : endCoord[0]
-  var steps = Math.abs(startCoord[0] - endCoord[0]) + 1
-  for (var i = 0; i < steps; i++) {
-    matrix[fromRow + i] = colArr.slice(0)
+export function makeDaySerial (startDay, days, ignoreWeekend) {
+  const serial = []
+  for (let i = 0; i < days; i++) {
+    let day = startDay + i
+    if (ignoreWeekend) {
+      if (day > 5) {
+        day -= 5
+      }
+    } else {
+      day %= 7
+    }
+    serial.push(day)
+  }
+  return serial
+}
+
+export function makeMatrix (startCoord, endCoord, startOfWeek = 1, ignoreWeekend) {
+  const matrix = {}
+  const colArr = makeRange(startCoord[1], endCoord[1])
+  const fromRow = startCoord[0] < endCoord[0] ? startCoord[0] : endCoord[0]
+  const steps = Math.abs(startCoord[0] - endCoord[0]) + 1
+  const daySerial = makeDaySerial(fromRow + startOfWeek, steps, ignoreWeekend)
+  for (let i = 0; i < daySerial.length; i++) {
+    matrix[daySerial[i]] = colArr.slice(0)
   }
   return matrix
 }
@@ -36,8 +53,8 @@ export function makeMatrix (startCoord, endCoord) {
  * @param {Array} addition
  */
 export function mergeArray (origin, addition) {
-  var hash = {}
-  var res = []
+  const hash = {}
+  const res = []
 
   origin.forEach(function (item, i) {
     hash[item] = 1
@@ -61,8 +78,8 @@ export function mergeArray (origin, addition) {
  * @param {Array} reject 要去除的数组
  */
 export function rejectArray (origin, reject) {
-  var hash = {}
-  var res = []
+  const hash = {}
+  const res = []
 
   reject.forEach(function (item, i) {
     hash[item] = i
