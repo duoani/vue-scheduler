@@ -95,8 +95,8 @@ The default value is `[0, 23]`.
 The first day of a week. `0` is Sunday, `1` is Monday, ...   
 The default value is `1`.
 
-- **ignoreWeekend** {Boolean} *since v2.0.0*
-Whether Sat & Sun is invisible.
+- **ignoreWeekend** {Boolean} *since v2.0.0*  
+Whether Sat & Sun is invisible.  
 The default value is `false`.
 
 ## Events
