@@ -357,7 +357,7 @@ export default {
       // TODO 未过滤 disabled 的格子
       var used = 0
       for (var i = 0; i < rows; i++) {
-        var day = (this.startOfWeek + startRow + i) % 7
+        var day = this.toDay(startRow + i)
         var data = this.selected[day]
         if (!data) {
           continue
@@ -370,7 +370,9 @@ export default {
       }
       return total === used ? SelectMode.MINUS : SelectMode.JOIN
     },
-
+    toDay (dayIndex) {
+      return (this.startOfWeek + dayIndex) % 7
+    },
     /**
      * 根据当前选中的时间格式的空闲情况，决定是全选还是全不选
      * 状态切换：
@@ -386,7 +388,7 @@ export default {
         return SelectMode.REPLACE
       }
       // TODO 未过滤 disabled 的格子
-      var day = this.selected[coord[0]]
+      var day = this.selected[this.toDay(coord[0])]
       return day && ~day.indexOf(coord[1]) ? SelectMode.MINUS : SelectMode.JOIN
     },
 
